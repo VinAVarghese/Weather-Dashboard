@@ -1,8 +1,11 @@
 // Grabbing HTML //
+var searchBarEl = $(".searchBar")
 var cityChoiceEl = $("#cityChoice")
 var cityListEl = $(".cityList")
+var cityButtons = $(".cityButtons")
 var cityInfoEl = $(".cityInfo")
 var cityNameEl = $(".cityName")
+var todaysDate = $(".date")
 var todayImgEl = $(".todayImg")
 var tempEl = $(".temp")
 var humidEl = $(".humidity")
@@ -23,6 +26,117 @@ var forecastHumidity1 = $(".forecastHumidity1")
 var forecastHumidity2 = $(".forecastHumidity2")
 var forecastHumidity3 = $(".forecastHumidity3")
 var forecastHumidity4 = $(".forecastHumidity4")
+// var currentBtns = []
 
-// URLs //
-var requestUrl = `api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=bdf166e3737ee21dc0f6661d8925ff12`
+// Function: Requesting Weather Info and Populating Site //
+var getWeather = function (city) {
+    
+    // Current Weather API //
+    var requestUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`;
+
+    $.get(requestUrl).then(function (data) {
+
+        // Creating City Buttons //
+        var cityButton = $("<button>");
+        cityButton.addClass("large-4 button secondary");
+        cityButton.attr("id", data.name)
+        cityButton.text(data.name);
+        cityListEl.prepend(cityButton); // *** Delete this line once "if statement" is ready *** //
+
+        // var currentBtnId = cityButton.attr("id")
+        // currentBtns.push(currentBtnId)
+        // for (let i = 0; i < currentBtns.length; i++) {
+        //     if (currentBtnId === (currentBtns[i])){
+        //         cityListEl.prepend(cityButton);
+        //     }
+        // }
+
+        // Event Listener: City Buttons // 
+        cityButton.on("click", function (event) {
+            event.preventDefault();
+            getWeather(data.name);
+        });
+        
+        // Populating Chosen City's Info On Page //
+        cityNameEl.text(`${data.name}`);
+
+        todaysDate.text(moment().format("M / D / YYYY"));
+
+        var iconcode = data.weather[0].icon
+        var iconUrl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+        todayImgEl.attr("src", iconUrl);
+
+        var fTemp = (((data.main.temp) - 273.15) * 9/5 + 32)
+        tempEl.text("Temperature: " + fTemp.toFixed(2) + " ˚F")
+
+        humidEl.text("Humidity: " + `${data.main.humidity}` + " %");
+
+        windEl.text("Wind Speed: " + `${data.wind.speed}` + " MPH");
+
+        // Seperate UV Index API //
+        var lat = data.coord.lat
+        var lon = data.coord.lon
+        var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=bdf166e3737ee21dc0f6661d8925ff12&lat=" + lat + "&lon=" + lon
+        $.get(uvUrl).then(function (uv) {
+        uvIndexEl.text("UV Index: " + uv.value)
+        if (uv.value <= 2){
+            uvIndexEl.attr("id", "green")
+        } else if (uv.value <= 5 && uv.value >= 3) {
+            uvIndexEl.attr("id", "yellow")
+        } else {
+            uvIndexEl.attr("id", "red")
+        }
+        });
+
+        // Seperate 5-Day Forecast API //
+        var forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`
+        $.get(forecastUrl).then(function (forecast) {
+
+            var tomorrow = moment().add(1, 'days')
+            var dayAfter = moment().add(2, 'days')
+            var dayAfter2 = moment().add(3, 'days')
+            var dayAfter3 = moment().add(4, 'days')
+            var dayAfter4 = moment().add(5, 'days')
+            
+            forecastDate0.text(tomorrow.format(`M / D / YYYY`))
+            forecastDate1.text(dayAfter.format(`M / D / YYYY`))
+            forecastDate2.text(dayAfter2.format(`M / D / YYYY`))
+            forecastDate3.text(dayAfter3.format(`M / D / YYYY`))
+            forecastDate4.text(dayAfter4.format(`M / D / YYYY`))
+
+            $(".forecastImg0").attr("src","http://openweathermap.org/img/w/" + (forecast.list[0].weather[0].icon) + ".png")
+            $(".forecastImg1").attr("src","http://openweathermap.org/img/w/" + (forecast.list[8].weather[0].icon) + ".png")
+            $(".forecastImg2").attr("src","http://openweathermap.org/img/w/" + (forecast.list[16].weather[0].icon) + ".png")
+            $(".forecastImg3").attr("src","http://openweathermap.org/img/w/" + (forecast.list[24].weather[0].icon) + ".png")
+            $(".forecastImg4").attr("src","http://openweathermap.org/img/w/" + (forecast.list[32].weather[0].icon) + ".png")
+            
+            forecastTemp0.text("Temperature: " + (((forecast.list[0].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
+            forecastTemp1.text("Temperature: " + (((forecast.list[8].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
+            forecastTemp2.text("Temperature: " + (((forecast.list[16].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
+            forecastTemp3.text("Temperature: " + (((forecast.list[24].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
+            forecastTemp4.text("Temperature: " + (((forecast.list[32].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
+
+            forecastHumidity0.text("Humidity: " + (forecast.list[0].main.humidity) + " %")
+            forecastHumidity1.text("Humidity: " + (forecast.list[8].main.humidity) + " %")
+            forecastHumidity2.text("Humidity: " + (forecast.list[16].main.humidity) + " %")
+            forecastHumidity3.text("Humidity: " + (forecast.list[24].main.humidity) + " %")
+            forecastHumidity4.text("Humidity: " + (forecast.list[32].main.humidity) + " %")
+        });
+
+        // Store City Name to Local Storage //
+        localStorage.setItem("city", data.name)
+
+        // Making City Info Visible On Screen (default hidden)//
+        cityInfoEl.css("display", "block");
+    });
+};
+
+// Load Locally Stored City //
+var lastCity = localStorage.getItem("city")
+getWeather(lastCity)
+
+// Event Listener: Run Function On User Submitted City //
+searchBarEl.on("submit", function (event) {
+    event.preventDefault();
+    getWeather(cityChoiceEl.val());
+});
