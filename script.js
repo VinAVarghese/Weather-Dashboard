@@ -32,7 +32,7 @@ var currentCities = []
 var getWeather = function (city) {
 
     // Current Weather API //
-    var requestUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`;
+    var requestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`;
 
     $.get(requestUrl).then(function (data) {
 
@@ -73,7 +73,7 @@ var getWeather = function (city) {
         });
 
         // 5-Day Forecast API //
-        var forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`
+        var forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`
         $.get(forecastUrl).then(function (forecast) {
 
             var tomorrow = moment().add(1, 'days')
