@@ -60,7 +60,7 @@ var getWeather = function (city) {
         // UV Index API //
         var lat = data.coord.lat
         var lon = data.coord.lon
-        var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=bdf166e3737ee21dc0f6661d8925ff12&lat=" + lat + "&lon=" + lon
+        var uvUrl = `https://api.openweathermap.org/data/2.5/uvi?appid=bdf166e3737ee21dc0f6661d8925ff12&lat=${lat}&lon=${lon}`
         $.get(uvUrl).then(function (uv) {
         uvIndexEl.text("UV Index: " + uv.value)
         if (uv.value <= 2){
