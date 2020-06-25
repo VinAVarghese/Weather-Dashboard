@@ -47,7 +47,7 @@ var getWeather = function (city) {
         todaysDate.text(moment().format("M / D / YYYY"));
 
         var iconcode = data.weather[0].icon
-        var iconUrl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+        var iconUrl = "https://openweathermap.org/img/w/" + iconcode + ".png";
         todayImgEl.attr("src", iconUrl);
 
         var fTemp = (((data.main.temp) - 273.15) * 9/5 + 32)
@@ -60,7 +60,7 @@ var getWeather = function (city) {
         // UV Index API //
         var lat = data.coord.lat
         var lon = data.coord.lon
-        var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=bdf166e3737ee21dc0f6661d8925ff12&lat=" + lat + "&lon=" + lon
+        var uvUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=bdf166e3737ee21dc0f6661d8925ff12&lat=" + lat + "&lon=" + lon
         $.get(uvUrl).then(function (uv) {
         uvIndexEl.text("UV Index: " + uv.value)
         if (uv.value <= 2){
@@ -88,11 +88,11 @@ var getWeather = function (city) {
             forecastDate3.text(dayAfter3.format(`M / D / YYYY`))
             forecastDate4.text(dayAfter4.format(`M / D / YYYY`))
 
-            $(".forecastImg0").attr("src","http://openweathermap.org/img/w/" + (forecast.list[0].weather[0].icon) + ".png")
-            $(".forecastImg1").attr("src","http://openweathermap.org/img/w/" + (forecast.list[8].weather[0].icon) + ".png")
-            $(".forecastImg2").attr("src","http://openweathermap.org/img/w/" + (forecast.list[16].weather[0].icon) + ".png")
-            $(".forecastImg3").attr("src","http://openweathermap.org/img/w/" + (forecast.list[24].weather[0].icon) + ".png")
-            $(".forecastImg4").attr("src","http://openweathermap.org/img/w/" + (forecast.list[32].weather[0].icon) + ".png")
+            $(".forecastImg0").attr("src","https://openweathermap.org/img/w/" + (forecast.list[0].weather[0].icon) + ".png")
+            $(".forecastImg1").attr("src","https://openweathermap.org/img/w/" + (forecast.list[8].weather[0].icon) + ".png")
+            $(".forecastImg2").attr("src","https://openweathermap.org/img/w/" + (forecast.list[16].weather[0].icon) + ".png")
+            $(".forecastImg3").attr("src","https://openweathermap.org/img/w/" + (forecast.list[24].weather[0].icon) + ".png")
+            $(".forecastImg4").attr("src","https://openweathermap.org/img/w/" + (forecast.list[32].weather[0].icon) + ".png")
             
             forecastTemp0.text("Temperature: " + (((forecast.list[0].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
             forecastTemp1.text("Temperature: " + (((forecast.list[8].main.temp) - 273.15) * 9/5 + 32).toFixed(2) + " ˚F")
