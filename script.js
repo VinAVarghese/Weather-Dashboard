@@ -26,39 +26,23 @@ var forecastHumidity1 = $(".forecastHumidity1")
 var forecastHumidity2 = $(".forecastHumidity2")
 var forecastHumidity3 = $(".forecastHumidity3")
 var forecastHumidity4 = $(".forecastHumidity4")
-// var currentBtns = []
+var currentCities = []
 
 // Function: Requesting Weather Info and Populating Site //
 var getWeather = function (city) {
-    
+
     // Current Weather API //
     var requestUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`;
 
     $.get(requestUrl).then(function (data) {
 
-        // Creating City Buttons //
-        var cityButton = $("<button>");
-        cityButton.addClass("large-4 button secondary");
-        cityButton.attr("id", data.name)
-        cityButton.text(data.name);
-        cityListEl.prepend(cityButton); // *** Delete this line once "if statement" is ready *** //
+        var cityName = data.name
 
-        // var currentBtnId = cityButton.attr("id")
-        // currentBtns.push(currentBtnId)
-        // for (let i = 0; i < currentBtns.length; i++) {
-        //     if (currentBtnId === (currentBtns[i])){
-        //         cityListEl.prepend(cityButton);
-        //     }
-        // }
-
+     
         // Event Listener: City Buttons // 
-        cityButton.on("click", function (event) {
-            event.preventDefault();
-            getWeather(data.name);
-        });
-        
+
         // Populating Chosen City's Info On Page //
-        cityNameEl.text(`${data.name}`);
+        cityNameEl.text(cityName);
 
         todaysDate.text(moment().format("M / D / YYYY"));
 
@@ -73,7 +57,7 @@ var getWeather = function (city) {
 
         windEl.text("Wind Speed: " + `${data.wind.speed}` + " MPH");
 
-        // Seperate UV Index API //
+        // UV Index API //
         var lat = data.coord.lat
         var lon = data.coord.lon
         var uvUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=bdf166e3737ee21dc0f6661d8925ff12&lat=" + lat + "&lon=" + lon
@@ -88,7 +72,7 @@ var getWeather = function (city) {
         }
         });
 
-        // Seperate 5-Day Forecast API //
+        // 5-Day Forecast API //
         var forecastUrl = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=bdf166e3737ee21dc0f6661d8925ff12`
         $.get(forecastUrl).then(function (forecast) {
 
@@ -131,12 +115,46 @@ var getWeather = function (city) {
     });
 };
 
-// Load Locally Stored City //
+// Load Locally Stored City To current city Array //
 var lastCity = localStorage.getItem("city")
-getWeather(lastCity)
+if(lastCity !== null){
+    getWeather(lastCity)
+    currentCities.push(lastCity)
+    var cityButton = $("<button>");
+    cityButton.addClass("large-4 button addedCity secondary");
+    cityButton.attr("id", lastCity)
+    cityButton.text(lastCity);
+    cityListEl.prepend(cityButton)
+}
 
-// Event Listener: Run Function On User Submitted City //
+// Event Listener: Run Function On Searched City //
 searchBarEl.on("submit", function (event) {
     event.preventDefault();
-    getWeather(cityChoiceEl.val());
+
+    // Emptying cityList of Buttons //
+    $(".cityList").empty();
+    var cityChoice = cityChoiceEl.val().trim()
+
+       // Ensuring currentCities Array Has No Repitions //
+       if(!currentCities.includes(cityChoice)) {
+        currentCities.push(cityChoice)
+        }   
+
+        for (let i = 0; i < currentCities.length; i++) {
+        // Creating City Buttons From currentCities Array //
+        var cityButton = $("<button>");
+        cityButton.addClass("large-4 button addedCity secondary");
+        cityButton.attr("id", currentCities[i])
+        cityButton.text(currentCities[i]);
+        cityListEl.prepend(cityButton); 
+        }
+
+    getWeather(cityChoice);
+});
+
+// Event Listener: Run Function On Past City Buttons //
+cityListEl.on("click", function (event) {
+    event.preventDefault();
+    var cityToSearch = event.target.textContent
+    getWeather(cityToSearch);
 });
